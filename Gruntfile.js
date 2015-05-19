@@ -3,11 +3,11 @@ module.exports = function(grunt) {
     pkg: grunt.file.readJSON('package.json'),
     uglify: {
       options: {
-        banner: '/*! <%= pkg.name %> <%= grunt.template.today("yyyy-mm-dd") %> */\n'
+        banner: '/*! <%= pkg.name %> - <%= pkg.version %> <%= grunt.template.today("yyyy-mm-dd") %> */\n'
       },
       hexu_build: {
         src: 'src/*.js',
-        dest: 'build/<%= pkg.name %>.min.js'
+        dest: 'lib/<%= pkg.name %>-<%= pkg.version %>.min.js'
       }
     }
   });

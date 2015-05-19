@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<script src="../lib/easeljs-0.8.0.min.js"></script>
+	<script src="../lib/hex-utils-js-0.0.1.min.js"></script>
+</head>
+
+<script>
+	function init() {
+		var stage = new createjs.Stage("hexU-demo-canvas");
+	
+		var rn = 10;
+		var cn = 10;
+		var hexDetails = {width:56, height:55, c:14};
+		var hexuMap = new hexU.HexMap(cn, rn, hexDetails, "odd-r", {debug:true});
+		
+		var tiles = hexuMap.getTiles();
+		for (var i = 0; i < rn; i++) {
+			for (var j = 0; j < cn; j++) {
+				var pos = tiles[i][j];
+				var point = new createjs.Shape();
+				point.graphics.beginFill("red").drawCircle(0, 0, 3);
+				point.x = pos.x + hexDetails.width / 2;
+				point.y = pos.y + hexDetails.height / 2;
+				
+				var hex = new createjs.Shape();
+				var g = hex.graphics;
+				g.setStrokeStyle(1);
+				g.beginStroke("#000000");
+				g.moveTo(0, hexDetails.c);
+				g.lineTo(0, hexDetails.height - hexDetails.c);
+				g.lineTo(hexDetails.width / 2, hexDetails.height);
+				g.lineTo(hexDetails.width, hexDetails.height - hexDetails.c);
+				g.lineTo(hexDetails.width, hexDetails.c);
+				g.lineTo(hexDetails.width / 2, 0);
+				g.lineTo(0, hexDetails.c);
+				hex.x = pos.x;
+				hex.y = pos.y;
+				stage.addChild(hex);
+				stage.addChild(point);
+			}
+		}
+		stage.update();
+	}
+</script>
+
+<body onload="init()">
+	<canvas id="hexU-demo-canvas" width="500" height="300"></canvas>
+</body>
+
+</html>

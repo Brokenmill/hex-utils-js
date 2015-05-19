@@ -1,0 +1,20 @@
+{
+  "name": "hex-utils-js",
+  "version": "0.0.1",
+  "description": "Hex tile game utils",
+  "main": "hexU.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "hex",
+    "tile",
+    "utils"
+  ],
+  "author": "Brokenmill",
+  "license": "ISC",
+  "devDependencies": {
+    "grunt": "^0.4.5",
+    "grunt-contrib-uglify": "^0.9.1"
+  }
+}

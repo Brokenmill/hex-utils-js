@@ -2,19 +2,50 @@
 <html>
 
 <head>
+	<style>
+	body {
+		font-family: Arial, Helvetica, sans-serif;
+	}
+	.hexu-demo .ui-slider {
+		margin: 10px;
+		width: 300px;
+	}
+	.hexu-demo input {
+		margin-top:20px;
+	}
+	.hexu-demo label {
+		font-weight: bold;
+	}
+	</style>
+	
+	<link rel="stylesheet" href="../lib/jquery-ui/jquery-ui.min.css">
+	<script src="../lib/jquery-ui/external/jquery/jquery.js"></script>
+	<script src="../lib/jquery-ui/jquery-ui.min.js"></script>
 	<script src="../lib/easeljs-0.8.0.min.js"></script>
 	<script src="../lib/hex-utils-js-0.0.1.min.js"></script>
 </head>
 
 <script>
 	function init() {
-		var stage = new createjs.Stage("hexU-demo-canvas");
-	
 		var rn = 10;
 		var cn = 10;
-		var hexDetails = {width:56, height:55, c:14};
+		var hexDetails = {width:60, height:60, c:15};
+		
+		var stage = new createjs.Stage("hexu-demo-canvas");
 		var hexuMap = new hexU.HexMap(cn, rn, hexDetails, "odd-r", {debug:true});
 		
+		drawMap(stage,hexuMap,hexDetails,cn,rn);
+		
+		$("#w-slider").slider({min:1,max:100,value:hexDetails.width,slide:function(event, ui) {$("#w-amount").val(ui.value); hexDetails.width = ui.value; drawMap(stage,hexuMap,hexDetails,cn,rn)} });
+		$("#w-amount").val( $("#w-slider").slider( "value" ) );
+		$("#h-slider").slider({min:1,max:100,value:hexDetails.height,slide:function(event, ui) {$("#h-amount").val(ui.value); hexDetails.height = ui.value; drawMap(stage,hexuMap,hexDetails,cn,rn)} });
+		$("#h-amount").val( $("#h-slider").slider( "value" ) );
+		$("#c-slider").slider({min:0,max:100,value:hexDetails.c,slide:function(event, ui) {$("#c-amount").val(ui.value); hexDetails.c = ui.value; drawMap(stage,hexuMap,hexDetails,cn,rn)} });
+		$("#c-amount").val( $("#c-slider").slider( "value" ) );
+	}
+	
+	function drawMap(stage, hexuMap, hexDetails, cn, rn) {
+		stage.removeAllChildren();
 		var tiles = hexuMap.getTiles();
 		for (var i = 0; i < rn; i++) {
 			for (var j = 0; j < cn; j++) {
@@ -46,7 +77,18 @@
 </script>
 
 <body onload="init()">
-	<canvas id="hexU-demo-canvas" width="500" height="300"></canvas>
+	<div class="hexu-demo">
+		<label>HEX width</label>
+		<input type="text" id="w-amount" readonly />
+		<div id="w-slider"></div>
+		<label>HEX height</label>
+		<input type="text" id="h-amount" readonly>
+		<div id="h-slider"></div>
+		<label>HEX c</label>
+		<input type="text" id="c-amount" readonly>
+		<div id="c-slider"></div>
+	</div>
+	<canvas id="hexu-demo-canvas" width="800" height="500"></canvas>
 </body>
 
 </html>

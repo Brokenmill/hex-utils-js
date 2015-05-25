@@ -3,9 +3,14 @@ this.hexU = this.hexU || {};
 (function() {
 	
 	function HexMap(columns, rows, hexDetails, orientation, options) {
+		this.columns = columns;
+		this.rows = rows;
+		this.hexDetails = hexDetails;
+		this.orientation = orientation;
+		this.options = options;
+		
 		if (options.debug) {
-			console.log("Create Hexmap with the following hexDetails:");
-			console.log(hexDetails);
+			console.log("hexu: Create Hexmap with the following hexDetails: " + JSON.stringify(hexDetails));
 		}
 		
 		this.getTiles = function() {
@@ -30,6 +35,8 @@ this.hexU = this.hexU || {};
 			return rowArray;
 		}
 		
+		// thanks to http://stackoverflow.com/users/921224/sebastian-troy
+		// for the following answer http://stackoverflow.com/questions/7705228/hexagonal-grids-how-do-you-find-which-hexagon-a-point-is-in
 		this.coordToHex = function(x, y) {
 			var gridHeight = hexDetails.height - hexDetails.c;
 			var halfWidth = hexDetails.width / 2;

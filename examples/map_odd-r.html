@@ -23,32 +23,46 @@
 	<script src="../lib/jquery-ui/jquery-ui.min.js"></script>
 	<script src="../lib/easeljs-0.8.0.min.js"></script>
 	<script src="../lib/hex-utils-js-0.0.1.min.js"></script>
+	
+	<link rel="icon" href="favicon.ico" type="image/x-icon">
+	<title>ODD-R offset coordinates</title>
 </head>
 
 <script>
 	function init() {
+		var self = this;
+		
 		var rn = 10;
 		var cn = 10;
 		var hexDetails = {width:60, height:60, c:15};
 		
-		var stage = new createjs.Stage("hexu-demo-canvas");
-		var hexuMap = new hexU.HexMap(cn, rn, hexDetails, "odd-r", {debug:true});
+		this.stage = new createjs.Stage("hexu-demo-canvas");
+		this.hexuMap = new hexU.HexMap(cn, rn, hexDetails, "odd-r", {debug:true});
 		
-		drawMap(stage,hexuMap,hexDetails,cn,rn);
+		// initial draw
+		drawMap();
 		
-		$("#w-slider").slider({min:1,max:100,value:hexDetails.width,slide:function(event, ui) {$("#w-amount").val(ui.value); hexDetails.width = ui.value; drawMap(stage,hexuMap,hexDetails,cn,rn)} });
+		// add slider events
+		$("#w-slider").slider({min:1,max:100,value:hexDetails.width,slide:function(event, ui) {$("#w-amount").val(ui.value); self.hexuMap.hexDetails.width = ui.value; drawMap()} });
 		$("#w-amount").val( $("#w-slider").slider( "value" ) );
-		$("#h-slider").slider({min:1,max:100,value:hexDetails.height,slide:function(event, ui) {$("#h-amount").val(ui.value); hexDetails.height = ui.value; drawMap(stage,hexuMap,hexDetails,cn,rn)} });
+		$("#h-slider").slider({min:1,max:100,value:hexDetails.height,slide:function(event, ui) {$("#h-amount").val(ui.value); self.hexuMap.hexDetails.height = ui.value; drawMap()} });
 		$("#h-amount").val( $("#h-slider").slider( "value" ) );
-		$("#c-slider").slider({min:0,max:100,value:hexDetails.c,slide:function(event, ui) {$("#c-amount").val(ui.value); hexDetails.c = ui.value; drawMap(stage,hexuMap,hexDetails,cn,rn)} });
+		$("#c-slider").slider({min:0,max:100,value:hexDetails.c,slide:function(event, ui) {$("#c-amount").val(ui.value); self.hexuMap.hexDetails.c = ui.value; drawMap()} });
 		$("#c-amount").val( $("#c-slider").slider( "value" ) );
+		
+		// apply stage listener
+		stage.addEventListener("click", function(e) {
+			console.log(hexuMap.coordToHex(e.rawX, e.rawY));
+		});
 	}
 	
-	function drawMap(stage, hexuMap, hexDetails, cn, rn) {
+	function drawMap() {
+		var stage = self.stage;
+		var hexDetails = self.hexuMap.hexDetails;
 		stage.removeAllChildren();
 		var tiles = hexuMap.getTiles();
-		for (var i = 0; i < rn; i++) {
-			for (var j = 0; j < cn; j++) {
+		for (var i = 0; i < self.hexuMap.columns; i++) {
+			for (var j = 0; j < self.hexuMap.rows; j++) {
 				var pos = tiles[i][j];
 				var point = new createjs.Shape();
 				point.graphics.beginFill("red").drawCircle(0, 0, 3);
@@ -73,11 +87,6 @@
 				stage.addChild(point);
 			}
 		}
-		stage.addEventListener("click", function(e) {
-			console.log(e.rawX);console.log(e.rawY);
-			console.log(hexuMap);
-			console.log(hexuMap.coordToHex(e.rawX, e.rawY));
-		});
 		stage.update();
 	}
 </script>

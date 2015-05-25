@@ -29,6 +29,46 @@ this.hexU = this.hexU || {};
 			}
 			return rowArray;
 		}
+		
+		this.coordToHex = function(x, y) {
+			var gridHeight = hexDetails.height - hexDetails.c;
+			var halfWidth = hexDetails.width / 2;
+			var m = hexDetails.c / halfWidth;
+			
+			var row = Math.floor(y / gridHeight);
+			var column;
+			var rowIsOdd = row % 2 == 1;
+			
+			if (rowIsOdd) {// Yes: Offset x to match the indent of the row
+				column = Math.floor((x - halfWidth) / hexDetails.width);
+			} else {
+				column = Math.floor(x / hexDetails.width);
+			}
+			
+			// Work out the position of the point relative to the box it is in
+			var relY = y - (row * gridHeight);
+			var relX;
+
+			if (rowIsOdd) {
+				relX = (x - (column * hexDetails.width)) - halfWidth;
+			} else {
+				relX = x - (column * hexDetails.width);
+			}
+			
+			// Work out if the point is above either of the hexagon's top edges
+			if (relY < (-m * relX) + hexDetails.c) { // LEFT edge
+					row--;
+					if (!rowIsOdd)
+						column--;
+				}
+			else if (relY < (m * relX) - hexDetails.c) { // RIGHT edge
+				row--;
+				if (rowIsOdd)
+					column++;
+			}
+				
+			return {c: column, r : row};
+		}
 	}
 	
 	hexU.HexMap = HexMap;

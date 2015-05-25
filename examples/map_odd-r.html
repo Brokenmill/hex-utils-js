@@ -58,6 +58,7 @@
 				var hex = new createjs.Shape();
 				var g = hex.graphics;
 				g.setStrokeStyle(1);
+				g.beginFill("#F0FFFE");
 				g.beginStroke("#000000");
 				g.moveTo(0, hexDetails.c);
 				g.lineTo(0, hexDetails.height - hexDetails.c);
@@ -72,6 +73,11 @@
 				stage.addChild(point);
 			}
 		}
+		stage.addEventListener("click", function(e) {
+			console.log(e.rawX);console.log(e.rawY);
+			console.log(hexuMap);
+			console.log(hexuMap.coordToHex(e.rawX, e.rawY));
+		});
 		stage.update();
 	}
 </script>

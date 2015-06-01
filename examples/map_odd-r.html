@@ -38,6 +38,7 @@
 		
 		this.stage = new createjs.Stage("hexu-demo-canvas");
 		this.hexuMap = new hexU.HexMap(cn, rn, hexDetails, "odd-r", {debug:true});
+		this.tiles;
 		
 		// initial draw
 		drawMap();
@@ -51,8 +52,13 @@
 		$("#c-amount").val( $("#c-slider").slider( "value" ) );
 		
 		// apply stage listener
-		stage.addEventListener("click", function(e) {
-			console.log(hexuMap.coordToHex(e.rawX, e.rawY));
+		stage.addEventListener("stagemousedown", function(e) {
+			var pos = hexuMap.coordToHex(e.rawX, e.rawY);
+			drawNeighbors(pos.c, pos.r, hexDetails);
+		});
+		
+		stage.addEventListener("stagemouseup", function(e) {
+			//
 		});
 	}
 	
@@ -60,34 +66,62 @@
 		var stage = self.stage;
 		var hexDetails = self.hexuMap.hexDetails;
 		stage.removeAllChildren();
-		var tiles = hexuMap.getTiles();
+		this.tiles = hexuMap.getTiles();
 		for (var i = 0; i < self.hexuMap.columns; i++) {
 			for (var j = 0; j < self.hexuMap.rows; j++) {
-				var pos = tiles[i][j];
+				var pos = this.tiles[i][j];
+				
 				var point = new createjs.Shape();
 				point.graphics.beginFill("red").drawCircle(0, 0, 3);
 				point.x = pos.x + hexDetails.width / 2;
 				point.y = pos.y + hexDetails.height / 2;
 				
-				var hex = new createjs.Shape();
-				var g = hex.graphics;
-				g.setStrokeStyle(1);
-				g.beginFill("#F0FFFE");
-				g.beginStroke("#000000");
-				g.moveTo(0, hexDetails.c);
-				g.lineTo(0, hexDetails.height - hexDetails.c);
-				g.lineTo(hexDetails.width / 2, hexDetails.height);
-				g.lineTo(hexDetails.width, hexDetails.height - hexDetails.c);
-				g.lineTo(hexDetails.width, hexDetails.c);
-				g.lineTo(hexDetails.width / 2, 0);
-				g.lineTo(0, hexDetails.c);
+				var hex = createHex(hexDetails);
 				hex.x = pos.x;
 				hex.y = pos.y;
+				
 				stage.addChild(hex);
 				stage.addChild(point);
 			}
 		}
 		stage.update();
+	}
+	
+	function createHex(hexDetails, color) {
+		color = typeof color !== 'undefined' ? color : "#F0FFFE";
+	
+		var hex = new createjs.Shape();
+		var g = hex.graphics;
+		g.setStrokeStyle(1);
+		g.beginFill(color);
+		g.beginStroke("#000000");
+		g.moveTo(0, hexDetails.c);
+		g.lineTo(0, hexDetails.height - hexDetails.c);
+		g.lineTo(hexDetails.width / 2, hexDetails.height);
+		g.lineTo(hexDetails.width, hexDetails.height - hexDetails.c);
+		g.lineTo(hexDetails.width, hexDetails.c);
+		g.lineTo(hexDetails.width / 2, 0);
+		g.lineTo(0, hexDetails.c);
+		
+		return hex;
+	}
+	
+	function drawNeighbors(c, r, hexDetails) {
+		for (var i = 0; i < 6; i++) {
+			var neighbor = hexuMap.getNeighbor(c, r, i);
+			if (hexuMap.isPosValid(neighbor.c, neighbor.r)) {
+				// draw neighbour highlight
+				var pos = tiles[neighbor.r][neighbor.c];
+				var hex = createHex(hexDetails, "#FFFFDD");
+				hex.x = pos.x;
+				hex.y = pos.y;
+				stage.addChild(hex);
+			}
+		}
+		stage.update();
+	}
+	
+	function clearNeighbors() {
 	}
 </script>
 

@@ -101,7 +101,7 @@ this.hexU = this.hexU || {};
 		* checks if the given (column, row) pair is within the boundaries of the hex map.
 		*/
 		this.isPosValid = function(c, r) {
-			return (c >= 0 && c < self.rows) && (r >= 0 && r < self.columns);
+			return (c >= 0 && c < rows) && (r >= 0 && r < columns);
 		}
 		
 		/**
@@ -112,7 +112,7 @@ this.hexU = this.hexU || {};
 			var _y = -1;
 			var _z = -1;
 			
-			if (self.orientation === Orientations.ODD_R) {
+			if (orientation === Orientations.ODD_R) {
 				_x = c - (r - (r & 1)) / 2;
 				_z = r;
 				_y = -_x - _z;
@@ -128,7 +128,7 @@ this.hexU = this.hexU || {};
 			var _c = -1;
 			var _r = -1;
 			
-			if (self.orientation === Orientations.ODD_R) {
+			if (orientation === Orientations.ODD_R) {
 				_c = x + (z - (z&1)) / 2;
 				_r = z;
 			}
@@ -140,14 +140,14 @@ this.hexU = this.hexU || {};
 			var parity = r & 1;
 			
 			var dir;
-			switch (self.orientation) {
+			switch (orientation) {
 				case Orientations.ODD_R:
 					dir = oddR_directions[parity][direction];
 					break;
 				default:
 					dir = { c: 0, r: 0 };
-					if (self.options.debug)
-					console.warn("getNeighbor: Map orientation is not valid or not supported:'" + self.orientation + "'");
+					if (options.debug)
+					console.warn("getNeighbor: Map orientation is not valid or not supported:'" + orientation + "'");
 			}
 			
 			
@@ -158,13 +158,13 @@ this.hexU = this.hexU || {};
 			var parity = hex.r & 1;
 			
 			var dir;
-			switch (self.orientation) {
+			switch (orientation) {
 				case Orientations.ODD_R:
 					dir = oddR_diagonals[parity][direction];
 					break;
 				default:
 					dir = { c: 0, r: 0 };
-					console.warn("getDiagonal: Map orientation is not valid or not supported:'" + self.orientation + "'");
+					console.warn("getDiagonal: Map orientation is not valid or not supported:'" + orientation + "'");
 			}
 			
 			return { c: (c + dir.c), r : (r + dir.r) };

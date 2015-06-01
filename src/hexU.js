@@ -3,6 +3,7 @@ this.hexU = this.hexU || {};
 (function() {
 	
 	function HexMap(columns, rows, hexDetails, orientation, options) {
+		options = options || {};
 		
 		var Orientations = { ODD_R : "odd-r" };
 		
@@ -101,7 +102,7 @@ this.hexU = this.hexU || {};
 		* checks if the given (column, row) pair is within the boundaries of the hex map.
 		*/
 		this.isPosValid = function(c, r) {
-			return (c >= 0 && c < rows) && (r >= 0 && r < columns);
+			return (c >= 0 && c < columns) && (r >= 0 && r < rows);
 		}
 		
 		/**

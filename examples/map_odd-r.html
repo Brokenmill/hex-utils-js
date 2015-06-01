@@ -32,12 +32,12 @@
 	function init() {
 		var self = this;
 		
+		var cn = 15;
 		var rn = 10;
-		var cn = 10;
 		var hexDetails = {width:60, height:60, c:15};
 		
 		this.stage = new createjs.Stage("hexu-demo-canvas");
-		this.hexuMap = new hexU.HexMap(cn, rn, hexDetails, "odd-r", {debug:true});
+		this.hexuMap = new hexU.HexMap(cn, rn, hexDetails, "odd-r");
 		this.tiles;
 		
 		// initial draw
@@ -67,8 +67,8 @@
 		var hexDetails = self.hexuMap.hexDetails;
 		stage.removeAllChildren();
 		this.tiles = hexuMap.getTiles();
-		for (var i = 0; i < self.hexuMap.columns; i++) {
-			for (var j = 0; j < self.hexuMap.rows; j++) {
+		for (var i = 0; i < self.hexuMap.rows; i++) {
+			for (var j = 0; j < self.hexuMap.columns; j++) {
 				var pos = this.tiles[i][j];
 				
 				var point = new createjs.Shape();
@@ -80,8 +80,13 @@
 				hex.x = pos.x;
 				hex.y = pos.y;
 				
+				var label = new createjs.Text(j + "," + i, "bold 12px Arial", "#000000");
+				label.x = pos.x + 10;
+				label.y = pos.y + 10;
+				
 				stage.addChild(hex);
 				stage.addChild(point);
+				stage.addChild(label);
 			}
 		}
 		stage.update();

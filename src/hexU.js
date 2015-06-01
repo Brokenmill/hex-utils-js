@@ -3,6 +3,23 @@ this.hexU = this.hexU || {};
 (function() {
 	
 	function HexMap(columns, rows, hexDetails, orientation, options) {
+		
+		var Orientations = { ODD_R : "odd-r" };
+		
+		var oddR_directions = [
+			[ { c:  1,  r: 0 }, { c:  0,  r: -1 }, { c: -1,  r: -1 },
+			  { c: -1,  r: 0 }, { c: -1,  r:  1 }, { c:  0,  r:  1 } ],
+			[ { c:  1,  r: 0 }, { c:  1,  r: -1 }, { c:  0,  r: -1 },
+			  { c: -1,  r: 0 }, { c:  0,  r:  1 }, { c:  1,  r:  1 } ]
+		];
+
+		var oddR_diagonals = [
+			[ { c:  1,  r: -1 }, { c:  0,  r: -2 }, { c: -2,  r: -1 },
+			  { c: -2,  r:  1 }, { c:  0,  r:  2 }, { c:  1,  r:  1 } ],
+			[ { c:  2,  r: -1 }, { c:  2,  r:  1 }, { c:  0,  r:  2 },
+			  { c: -1,  r:  1 }, { c: -1,  r: -1 }, { c:  0,  r: -2 } ],
+		];
+	
 		this.columns = columns;
 		this.rows = rows;
 		this.hexDetails = hexDetails;
@@ -35,6 +52,9 @@ this.hexU = this.hexU || {};
 			return rowArray;
 		}
 		
+		/**
+		* Transforms an (x, y) screen coordinate to a matrix position in the hex map.
+		*/
 		// thanks to http://stackoverflow.com/users/921224/sebastian-troy
 		// for the following answer http://stackoverflow.com/questions/7705228/hexagonal-grids-how-do-you-find-which-hexagon-a-point-is-in
 		this.coordToHex = function(x, y) {
@@ -75,6 +95,79 @@ this.hexU = this.hexU || {};
 			}
 				
 			return {c: column, r : row};
+		}
+		
+		/**
+		* checks if the given (column, row) pair is within the boundaries of the hex map.
+		*/
+		this.isPosValid = function(c, r) {
+			return (c >= 0 && c < self.rows) && (r >= 0 && r < self.columns);
+		}
+		
+		/**
+		* transforms the given position its cube representation
+		*/
+		this.toCube = function(c, r) {
+			var _x = -1;
+			var _y = -1;
+			var _z = -1;
+			
+			if (self.orientation === Orientations.ODD_R) {
+				_x = c - (r - (r & 1)) / 2;
+				_z = r;
+				_y = -_x - _z;
+			}
+			
+			return { x: _x, y: _y, z: _z};
+		}
+		
+		/**
+		* transforms the given cube position to this map's representation
+		*/
+		this.fromCube = function(x, y, z) {
+			var _c = -1;
+			var _r = -1;
+			
+			if (self.orientation === Orientations.ODD_R) {
+				_c = x + (z - (z&1)) / 2;
+				_r = z;
+			}
+			
+			return {c: _c, r: _r}
+		}
+		
+		this.getNeighbor = function(c, r, direction) {
+			var parity = r & 1;
+			
+			var dir;
+			switch (self.orientation) {
+				case Orientations.ODD_R:
+					dir = oddR_directions[parity][direction];
+					break;
+				default:
+					dir = { c: 0, r: 0 };
+					if (self.options.debug)
+					console.warn("getNeighbor: Map orientation is not valid or not supported:'" + self.orientation + "'");
+			}
+			
+			
+			return { c: (c + dir.c), r : (r + dir.r) };
+		}
+
+		this.getDiagonal = function(c, r, direction) {
+			var parity = hex.r & 1;
+			
+			var dir;
+			switch (self.orientation) {
+				case Orientations.ODD_R:
+					dir = oddR_diagonals[parity][direction];
+					break;
+				default:
+					dir = { c: 0, r: 0 };
+					console.warn("getDiagonal: Map orientation is not valid or not supported:'" + self.orientation + "'");
+			}
+			
+			return { c: (c + dir.c), r : (r + dir.r) };
 		}
 	}
 	

@@ -156,7 +156,7 @@ this.hexU = this.hexU || {};
 		}
 
 		this.getDiagonal = function(c, r, direction) {
-			var parity = hex.r & 1;
+			var parity = r & 1;
 			
 			var dir;
 			switch (orientation) {

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<style>
+	body {
+		font-family: Arial, Helvetica, sans-serif;
+	}
+	.hexu-demo .ui-slider {
+		margin: 10px;
+		width: 300px;
+	}
+	.hexu-demo input {
+		margin-top:20px;
+	}
+	.hexu-demo label {
+		font-weight: bold;
+	}
+	</style>
+	
+	<link rel="stylesheet" href="lib/jquery-ui/jquery-ui.min.css">
+	<script src="lib/jquery-ui/external/jquery/jquery.js"></script>
+	<script src="lib/jquery-ui/jquery-ui.min.js"></script>
+	<script src="lib/easeljs-0.8.0.min.js"></script>
+	<script src="lib/hex-utils-js-0.0.1.min.js"></script>
+	
+	<link rel="icon" href="favicon.ico" type="image/x-icon">
+	<title>ODD-R offset coordinates</title>
+</head>
+
+<script>
+	function init() {
+		var self = this;
+		
+		var cn = 15;
+		var rn = 10;
+		var hexDetails = {width:60, height:60, c:15};
+		
+		this.stage = new createjs.Stage("hexu-demo-canvas");
+		this.hexuMap = new hexU.HexMap(cn, rn, hexDetails, "odd-r");
+		this.tiles;
+		
+		// initial draw
+		drawMap();
+		
+		// add slider events
+		$("#w-slider").slider({min:1,max:100,value:hexDetails.width,slide:function(event, ui) {$("#w-amount").val(ui.value); self.hexuMap.hexDetails.width = ui.value; drawMap()} });
+		$("#w-amount").val( $("#w-slider").slider( "value" ) );
+		$("#h-slider").slider({min:1,max:100,value:hexDetails.height,slide:function(event, ui) {$("#h-amount").val(ui.value); self.hexuMap.hexDetails.height = ui.value; drawMap()} });
+		$("#h-amount").val( $("#h-slider").slider( "value" ) );
+		$("#c-slider").slider({min:0,max:100,value:hexDetails.c,slide:function(event, ui) {$("#c-amount").val(ui.value); self.hexuMap.hexDetails.c = ui.value; drawMap()} });
+		$("#c-amount").val( $("#c-slider").slider( "value" ) );
+		
+		// apply stage listener
+		stage.addEventListener("stagemousedown", function(e) {
+			var pos = hexuMap.coordToHex(e.rawX, e.rawY);
+			drawNeighbors(pos.c, pos.r, hexDetails);
+		});
+		
+		stage.addEventListener("stagemouseup", function(e) {
+			//
+		});
+	}
+	
+	function drawMap() {
+		var stage = self.stage;
+		var hexDetails = self.hexuMap.hexDetails;
+		stage.removeAllChildren();
+		this.tiles = hexuMap.getTiles();
+		for (var i = 0; i < self.hexuMap.rows; i++) {
+			for (var j = 0; j < self.hexuMap.columns; j++) {
+				var pos = this.tiles[i][j];
+				
+				var point = new createjs.Shape();
+				point.graphics.beginFill("red").drawCircle(0, 0, 3);
+				point.x = pos.x + hexDetails.width / 2;
+				point.y = pos.y + hexDetails.height / 2;
+				
+				var hex = createHex(hexDetails);
+				hex.x = pos.x;
+				hex.y = pos.y;
+				
+				var label = new createjs.Text(j + "," + i, "bold 12px Arial", "#000000");
+				label.x = pos.x + 10;
+				label.y = pos.y + 10;
+				
+				stage.addChild(hex);
+				stage.addChild(point);
+				stage.addChild(label);
+			}
+		}
+		stage.update();
+	}
+	
+	function createHex(hexDetails, color) {
+		color = typeof color !== 'undefined' ? color : "#F0FFFE";
+	
+		var hex = new createjs.Shape();
+		var g = hex.graphics;
+		g.setStrokeStyle(1);
+		g.beginFill(color);
+		g.beginStroke("#000000");
+		g.moveTo(0, hexDetails.c);
+		g.lineTo(0, hexDetails.height - hexDetails.c);
+		g.lineTo(hexDetails.width / 2, hexDetails.height);
+		g.lineTo(hexDetails.width, hexDetails.height - hexDetails.c);
+		g.lineTo(hexDetails.width, hexDetails.c);
+		g.lineTo(hexDetails.width / 2, 0);
+		g.lineTo(0, hexDetails.c);
+		
+		return hex;
+	}
+	
+	function drawNeighbors(c, r, hexDetails) {
+		for (var i = 0; i < 6; i++) {
+			var neighbor = hexuMap.getNeighbor(c, r, i);
+			if (hexuMap.isPosValid(neighbor.c, neighbor.r)) {
+				// draw neighbour highlight
+				var pos = tiles[neighbor.r][neighbor.c];
+				var hex = createHex(hexDetails, "#FFFFDD");
+				hex.x = pos.x;
+				hex.y = pos.y;
+				stage.addChild(hex);
+			}
+		}
+		stage.update();
+	}
+	
+	function clearNeighbors() {
+	}
+</script>
+
+<body onload="init()">
+	<div class="hexu-demo">
+		<label>HEX width</label>
+		<input type="text" id="w-amount" readonly />
+		<div id="w-slider"></div>
+		<label>HEX height</label>
+		<input type="text" id="h-amount" readonly>
+		<div id="h-slider"></div>
+		<label>HEX c</label>
+		<input type="text" id="c-amount" readonly>
+		<div id="c-slider"></div>
+		
+		<canvas id="hexu-demo-canvas" width="1200" height="500" style="border:1px solid"></canvas>
+	</div>
+</body>
+
+</html>
